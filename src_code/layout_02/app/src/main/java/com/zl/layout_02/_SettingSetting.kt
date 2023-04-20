@@ -82,12 +82,13 @@ fun SettingSettingSetting(navController : NavHostController) {
 @Composable
 fun SettingSettingTime(navController : NavHostController) {
     //https://blog.csdn.net/mfd521/article/details/125602653?
-    throw NotImplementedError()
+//    throw NotImplementedError()
+    TimeSelect()
 }
 
 @Composable
 fun SettingSettingChangeMessage(navController : NavHostController) {
-    throw NotImplementedError()
+    SettingInput()
 }
 
 @Composable
