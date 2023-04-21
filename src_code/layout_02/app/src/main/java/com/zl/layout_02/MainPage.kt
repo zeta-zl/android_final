@@ -3,6 +3,7 @@ package com.zl.layout_02
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,9 @@ fun MainPage(navHostController : NavHostController) {
                     modifier = Modifier
                         .padding(padding)
                 ) {
-                    CapsuleSlider(imageList)
+                    CapsuleSlider(imageList, Modifier.clickable {
+                        navHostController.navigate("PersonList")
+                    })
                     Text(text = "test")
                 }
             }, bottomBar = { BottomNavigationBar(navHostController) }
@@ -68,8 +71,8 @@ fun CapsuleSlider(
         ) {
             LazyRow(
                 state = scrollState,
-                horizontalArrangement = Arrangement.Center
-
+                horizontalArrangement = Arrangement.Center,
+                modifier = modifier
             ) {
                 items(images) { image : Int ->
                     Image(

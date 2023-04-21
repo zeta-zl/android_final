@@ -29,6 +29,8 @@ fun NavContent() {
         composable("main") { MainPage(navHostController) }
         composable("User") { User(navHostController) }
 
+        composable("PersonList") { PersonList(navHostController) }
+
         composable("Person") { SettingPerson() }
         composable("Setting") { SettingSetting() }
         composable("About") { SettingAbout() }
