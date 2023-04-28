@@ -1,0 +1,303 @@
+package com.zl.layout_03
+
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import kotlin.random.Random
+
+
+val itemsHeight = 90.dp
+
+//@Preview
+@Composable
+fun PersonList(navController : NavHostController) {
+    val personData = remember {
+        createPersonObj()
+    }
+    var selectItem = remember {
+        mutableStateOf(-1)
+    }
+
+    var temp = remember {
+        mutableStateOf(Person("", "", ""))
+    }
+    val showingDialog = remember { mutableStateOf(false) }
+    newPersonDialog("添加", personData, personData.size - 1, showingDialog)
+    val context = LocalContext.current
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "PersonList",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentSize(Alignment.Center)//设置标题文本居中显示
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                navigationIcon = {
+                    IconButton(onClick = {
+                        Toast.makeText(context, "返回", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Icon(Icons.Filled.ArrowBack, null)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        showingDialog.value = !showingDialog.value
+                        personData.add(mutableStateOf(Person("", "", "")))
+                        temp.value = Person("", "", "")
+                        Toast.makeText(context, "添加", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Icon(Icons.Filled.Add, null)
+                    }
+                },
+                backgroundColor = Color.White,//背景色
+                contentColor = Color.Red, //子级内容颜色
+            )
+        }
+    )
+    {
+
+        Box(modifier = Modifier.padding(it)) {
+            PersonLazyList(personData, selectItem)
+        }
+    }
+
+}
+
+
+@Composable
+fun PersonLazyList(
+    personData : SnapshotStateList<MutableState<Person>>,
+    select : MutableState<Int>
+) {
+    val scrollState = rememberLazyListState()
+    LazyColumn(
+        state = scrollState,
+        verticalArrangement = Arrangement.Center
+
+    ) {
+        itemsIndexed(personData) { index, item ->
+            Box {
+                val showingDialog = remember { mutableStateOf(false) }
+                newPersonDialog("修改", personData, index, showingDialog)
+                PersonCard(item, index, select)
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(0.dp, 2.dp, 0.dp, 2.dp)
+                        .height(itemsHeight / 3)
+//                        .border(5.dp, Color.Blue)
+                    ,
+                    contentPadding = (PaddingValues(1.dp)),
+                    onClick = {
+                        showingDialog.value = true
+//                        personData[index] = p
+                    }) {
+                    Text(text = "修改")
+                }
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(0.dp, 2.dp, 0.dp, 2.dp)
+                        .height(itemsHeight / 3),
+                    contentPadding = (PaddingValues(1.dp)),
+                    onClick = {
+                        personData.removeAt(index)
+                    }) {
+                    Text(text = "删除")
+                }
+            }
+        }
+    }
+
+}
+
+fun iterableTOString(a : List<Any>) : String {
+    val s = StringBuffer()
+    for (i in a) {
+        s.append(i).append('\n')
+    }
+    return s.toString()
+}
+
+@Composable
+fun newPersonDialog(
+    title : String,
+//    person : MutableState<Person>,
+    personData : SnapshotStateList<MutableState<Person>>,
+    index : Int,
+    showingDialog : MutableState<Boolean>
+) : MutableState<Person> {
+
+
+    val person : MutableState<Person> = personData[index]
+
+//    val showingDialog = remember { mutableStateOf(false) }
+    val org = person.value
+
+    if (showingDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                person.value = org
+                showingDialog.value = false
+            },
+            title = {
+                Text(title)
+            },
+            buttons = {
+                Row {
+                    TextButton(
+                        onClick = {
+                            Log.i("zeta", org.toString())
+                            Log.i("zeta", person.value.toString())
+                            person.value = org
+                            showingDialog.value = false
+                        },
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Text("取消")
+                    }
+                    TextButton(
+                        onClick = {
+                            showingDialog.value = false
+                        },
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Text("确定")
+                    }
+                }
+            },
+            text = {
+                Column {
+                    Text(text = "姓名:", fontSize = 30.sp)
+                    TextField(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth(),
+                        value = person.value.name,
+                        onValueChange = { newText ->
+                            person.value = Person(
+                                newText.trim().replace(Regex("\\s+"), " "),
+                                person.value.telephone, person.value.email, person.value.img
+                            )
+                        }
+                    )
+                    Text(text = "电话号码:", fontSize = 30.sp)
+                    TextField(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth(),
+                        value = person.value.telephone,
+                        onValueChange = { newText ->
+                            person.value = Person(
+                                person.value.name,
+                                newText.trim().replace(Regex("\\s+"), " "),
+                                person.value.email, person.value.img
+                            )
+                        }
+                    )
+                    Text(text = "邮箱:", fontSize = 30.sp)
+                    TextField(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth(),
+                        value = person.value.email,
+                        onValueChange = { newText ->
+                            person.value = Person(
+                                person.value.name, person.value.telephone,
+                                newText,
+                                person.value.img
+                            )
+                        }
+                    )
+                }
+                Log.i("zeta", org.toString())
+                Log.i("zeta", person.value.toString())
+            }
+        )
+    }
+    return person
+}
+
+
+@Composable
+fun PersonCard(person : MutableState<Person>, index : Int, select : MutableState<Int>) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(if (index == select.value) Color.LightGray else Color.White)
+            .clickable {
+                select.value = if (select.value != index) index else -1
+            }
+    ) {
+        Row() {
+            Image(
+                person.value.img, "img",
+                modifier = Modifier
+                    .height(itemsHeight / 2)
+                    .width(itemsHeight / 2)
+            )
+            Text(text = person.value.name, fontSize = (itemsHeight * 3 / 8).value.sp)
+        }
+        Row() {
+            Text(text = "tel: ${person.value.telephone} ")
+            Text(text = "email: ${person.value.email} ")
+        }
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp,
+        )
+    }
+}
+
+
+fun createPersonObj() : SnapshotStateList<MutableState<Person>> {
+    val ret : SnapshotStateList<MutableState<Person>> = SnapshotStateList()
+    for (i in 1..5) {
+        ret.add(mutableStateOf(Person()))
+    }
+    return ret
+}
+
+
+data class Person(
+    var name : String = "test",
+    var telephone : String = (Random.nextLong((1 * 10e9).toLong(), (9 * 10e9).toLong())
+        .toString()),
+    var email : String = Random.nextInt((9 * 10e9).toInt()).toString() + "@qq.com",
+    var img : ImageVector = Icons.Default.Person
+
+) {
+    constructor(p : Person) : this() {
+        name = p.name
+        telephone = p.telephone
+        email = p.email
+        img = p.img
+    }
+}
