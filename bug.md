@@ -9,7 +9,7 @@ items(item) {}}`
 `import androidx.compose.foundation.lazy.items`
 
 #### compose不刷新
- 
+
 考虑我们有一个类time：  
 `data class time(  
 var hour : Int = 0,
@@ -21,7 +21,22 @@ var minute : Int = 0)`
 不会刷新compose，要等下次更新相关ui时，才会刷新
 
 大概是因为test中的value，并没有改变，仍然是同一个对象  
-解决方案有两个：  
+解决方案有两个：
+
 1. 在下面加一行任意语句，使compose状态刷新(其实理论上是有强制刷新的语句的，我不信会没有设计，但我确实没找到)
 2. 直接new一个对象： `test.value = time(NEWVALUE,test.value.minute)`
-这两种方式都能使compose刷新
+   这两种方式都能使compose刷新
+
+#### database不能获取信息
+
+由于database只创建一次，因此我把它放在了一个`StaticObj`里面  
+有两个静态成员：           
+`lateinit var personDataBase : myDatabase  `  
+`lateinit var personDataDao : myDataDao`
+
+查询函数`getAll()`返回一个`Flow<List<myData>>`
+
+但，如果想要获取查询，即getAll()，
+`StaticObj.myDataDao.getAll()`会返回一个空列表  
+改成`StaticObj.myDataBase.myDataDao().getAll()`后正常工作
+
