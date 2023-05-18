@@ -25,9 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-abstract class HelpProvider {
+interface HelpProvider {
     @Composable
-    abstract fun Help(extraData : Any?)
+    fun Help(extraData : Any?)
 
     @Composable
     fun Helper(isHelpShow : MutableState<Boolean>, extraData : Any?) {
@@ -46,7 +46,7 @@ abstract class HelpProvider {
 }
 
 
-class PersonListHelper() : HelpProvider() {
+class PersonListHelper() : HelpProvider {
     @Composable
     override fun Help(extraData : Any?) {
         val customColor = Color.Red
@@ -130,7 +130,7 @@ class PersonListHelper() : HelpProvider() {
     }
 }
 
-class MainHelper() : HelpProvider() {
+class MainHelper() : HelpProvider {
     @Composable
     override fun Help(extraData : Any?) {
         val customColor = Color.Black

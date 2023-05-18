@@ -28,15 +28,15 @@ fun SettingSettingNavContent() {
 
         composable("setting") {
             uploadDataBase()
-            SettingSettingSetting(navHostController)
+            Settings(navHostController)
         }
         composable("Time") {
             uploadDataBase()
-            SettingSettingTime(navHostController)
+            SettingTime(navHostController)
         }
         composable("ChangeMessage") {
             uploadDataBase()
-            SettingSettingChangeMessage(navHostController)
+            SettingChangeMessage(navHostController)
         }
         composable("Off") {
             uploadDataBase()
@@ -46,7 +46,7 @@ fun SettingSettingNavContent() {
 
 
 @Composable
-fun SettingSettingSetting(navController : NavHostController) {
+fun Settings(navController : NavHostController) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -79,8 +79,7 @@ fun SettingSettingSetting(navController : NavHostController) {
             title = "Off",
             details = "Turn off all",
             onClick = {
-                settingSettingOff(context,navController)
-//                navController.navigate("Off")
+                settingOff(context,navController)
             }
         )
     }
@@ -114,18 +113,18 @@ fun Section(title : String, details : String, onClick : () -> Unit) {
 
 
 @Composable
-fun SettingSettingTime(navController : NavHostController) {
+fun SettingTime(navController : NavHostController) {
 //    TimeSelect()
     SelectTimeList(navController)
 }
 
 @Composable
-fun SettingSettingChangeMessage(navController : NavHostController) {
+fun SettingChangeMessage(navController : NavHostController) {
     SettingInput(navController)
 }
 
 //@Composable
-fun settingSettingOff(context: Context, navController : NavHostController) {
+fun settingOff(context: Context, navController : NavHostController) {
     StaticObj.initTimeDatabaseList.forEach { selectTime ->
         selectTime.enabled = false
         StaticObj.TimeDataBase.TimeDataDao().update(selectTime)

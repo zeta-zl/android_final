@@ -21,8 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.zl.testhelper.HelpStateManager.isListHelpEnabled
-import com.zl.testhelper.HelpStateManager.setListHelpEnabled
 import kotlinx.coroutines.*
 
 
@@ -107,9 +105,16 @@ fun PersonList(navController : NavHostController) {
 //                helpProvider.Helper(isHelpShowing,personData.size)
             }
             if (personData.size == 2) {
-                setListHelpEnabled(context, false)
+                ContactsHelpStateManager
+                    .saveState(
+                        context,
+                        false.toString()
+                    )
             }
-            if (isListHelpEnabled(context)) {
+            if (ContactsHelpStateManager
+                    .getState(context)
+                    ?.toBooleanStrictOrNull() != false
+            ) {
                 helpProvider.Helper(isHelpShowing, personData.size)
             }
         }

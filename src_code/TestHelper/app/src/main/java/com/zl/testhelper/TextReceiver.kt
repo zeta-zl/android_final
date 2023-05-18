@@ -27,7 +27,7 @@ class TextReceiver : BroadcastReceiver() {
         // 发送短信操作
         // 请确保已经获取了发送短信的权限
         for (phoneNumber in phoneNumbers) {
-            sendMessage(phoneNumber,message)
+            sendMessage(phoneNumber, message)
             // 发送短信给每个号码
             // 请实现发送短信的逻辑
         }
@@ -38,6 +38,7 @@ class TextReceiver : BroadcastReceiver() {
         // 发送邮件操作
         // 请确保已经获取了发送邮件的权限
         for (email in emails) {
+            sendEmail(email, message)
             // 发送邮件给每个邮箱
             // 请实现发送邮件的逻辑
         }

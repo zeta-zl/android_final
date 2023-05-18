@@ -1,10 +1,8 @@
 package com.zl.testhelper
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,10 +12,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.zl.testhelper.TextState.StringStorageManager.getEmailContent
-import com.zl.testhelper.TextState.StringStorageManager.getMessageContent
-import com.zl.testhelper.TextState.StringStorageManager.saveEmailContent
-import com.zl.testhelper.TextState.StringStorageManager.saveMessageContent
+import com.zl.testhelper.TextStorage.StringStorageManager.getEmailContent
+import com.zl.testhelper.TextStorage.StringStorageManager.getMessageContent
+import com.zl.testhelper.TextStorage.StringStorageManager.saveEmailContent
+import com.zl.testhelper.TextStorage.StringStorageManager.saveMessageContent
 
 @Composable
 fun SettingInput(navController : NavHostController) {

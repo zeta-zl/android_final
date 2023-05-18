@@ -1,16 +1,19 @@
 package com.zl.testhelper
 
 import android.content.Context
+import androidx.activity.result.ActivityResultLauncher
 import androidx.room.Room
 
 class StaticObj {
     companion object {
         lateinit var TimeDataBase : TimeDatabase
-        lateinit var TimeDataDao : TimeDataDao
+        private lateinit var TimeDataDao : TimeDataDao
         var initTimeDatabaseList : List<SelectTime> = listOf()
         lateinit var personDataBase : PersonDatabase
-        lateinit var personDataDao : PersonDataDao
+        private lateinit var personDataDao : PersonDataDao
         var initPersonDatabaseList : List<Person> = listOf()
+
+        lateinit var requestPermissionLauncher : ActivityResultLauncher<String>
         fun initDatabase(context : Context) {
             TimeDataBase = Room.databaseBuilder(
                 context, TimeDatabase::class.java, "TimeData"

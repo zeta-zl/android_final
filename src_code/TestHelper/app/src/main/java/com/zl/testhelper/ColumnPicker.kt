@@ -35,7 +35,7 @@ private val itemHeight = 38.dp
 private const val itemAlphaGap = 0.3f
 
 /**
- * 条目数量. 这个暂时不能随便改.  目前得同时改逻辑才行;
+ * 条目数量. 暂时不能随便改.  目前得同时改逻辑才行;
  */
 private const val columnCount = 5
 

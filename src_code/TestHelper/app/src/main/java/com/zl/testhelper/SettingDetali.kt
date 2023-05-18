@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.zl.testhelper.ButtonStateManager.getButtonClickedDate
 
 @Composable
 fun InformationScreen(navController : NavHostController) {
@@ -109,7 +108,7 @@ fun InformationScreen(navController : NavHostController) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text("当前更新日期")
-                            Text(getButtonClickedDate(LocalContext.current) ?: "未更新")
+                            Text(ButtonStateManager.getState(LocalContext.current) ?: "未更新")
                         }
                     }
                 }

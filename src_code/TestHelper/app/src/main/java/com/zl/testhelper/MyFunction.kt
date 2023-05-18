@@ -7,17 +7,13 @@ import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.telephony.SmsManager
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.zl.testhelper.TextState.StringStorageManager.getEmailContent
-import com.zl.testhelper.TextState.StringStorageManager.getMessageContent
+import com.zl.testhelper.TextStorage.StringStorageManager.getEmailContent
+import com.zl.testhelper.TextStorage.StringStorageManager.getMessageContent
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -190,63 +186,67 @@ fun showConfirmationDialog(activity : Activity, onConfirm : () -> Unit) {
     dialog.show()
 }
 
-fun requestPermissionsAndSendMessagesAndEmails(activity : Activity) : Boolean {
-    if (ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.SEND_SMS
-        ) != PackageManager.PERMISSION_GRANTED
-    ) {
-        ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(Manifest.permission.SEND_SMS),
-            PERMISSION_REQUEST_CODE
+
+fun registerForRequestPermissionLauncher(activity : ComponentActivity) {
+    val requestPermissionLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.RequestPermission(
+
         )
-        while (true) {
-            if (ContextCompat.checkSelfPermission(
-                    activity,
-                    Manifest.permission.SEND_SMS
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                testSendMessages()
-                return true
-            }
+    ) { isGranted : Boolean ->
+        if (isGranted) {
+            testSendMessages()
+//            isPermissionGranted = true
+            // Permission is granted. Continue the action or workflow in your app.
+        } else {
+            Log.i("zeta", "request permission failed")
+            // Explain to the user that the feature is unavailable because the
+            // feature requires a permission that the user has denied. At the
+            // same time, respect the user's decision. Don't link to system
+            // settings in an effort to convince the user to change their
+            // decision.
         }
-    } else {
-        testSendMessages()
     }
-    return false
+    StaticObj.requestPermissionLauncher = requestPermissionLauncher
+}
+
+fun requestPermissionsAndSendMessagesAndEmails() {
+    val permission = Manifest.permission.SEND_SMS
+    StaticObj.requestPermissionLauncher.launch(permission)
+}
+
+fun requestPermissionsAndSendMessagesAndEmails(activity : ComponentActivity) : Boolean {
+    val permission = Manifest.permission.SEND_SMS
+    var isPermissionGranted = false
+
+    val requestPermissionLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.RequestPermission(
+
+        )
+    ) { isGranted : Boolean ->
+        if (isGranted) {
+            testSendMessages()
+            isPermissionGranted = true
+            // Permission is granted. Continue the action or workflow in your app.
+        } else {
+            Log.i("zeta", "request permission failed")
+            // Explain to the user that the feature is unavailable because the
+            // feature requires a permission that the user has denied. At the
+            // same time, respect the user's decision. Don't link to system
+            // settings in an effort to convince the user to change their
+            // decision.
+        }
+    }
+
+//    requestPermissionLauncher.launch(permission)
+    return isPermissionGranted
 }
 
 
-//    if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-//        val permissionResult = suspendCoroutine<Boolean> { continuation ->
-//            val permissionCallback = { grantResults: IntArray ->
-//                val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-//                continuation.resume(granted)
-//            }
-//
-//            ActivityCompat.requestPermissions(activity, arrayOf(permission), PERMISSION_REQUEST_CODE)
-//            activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
-//                permissionCallback(result)
-//            }
-//
-//        }
-//
-//        if (permissionResult) {
-//            testSendMessages()
-//        }
-//
-//        return permissionResult
-//    } else {
-//        testSendMessages()
-//        return false
-//    }
-//}
 
 fun TestSend(context : Context) {
     val currentDate = getCurrentDate()
-    ButtonStateManager.saveButtonClickedDate(context, currentDate)
-    Log.i("zeta", ButtonStateManager.getButtonClickedDate(context).toString())
+    ButtonStateManager.saveState(context, currentDate)
+//    Log.i("zeta", ButtonStateManager.getButtonClickedDate(context).toString())
     val currentTime = LocalTime.now()
     var triggerTime = currentTime.plusMinutes(1)
 //                        requestPermissionsAndSendMessagesAndEmails(context as Activity)
@@ -259,6 +259,7 @@ fun TestSend(context : Context) {
         )
     )
 }
+
 fun cancelAlarm(context : Context, selectTime : SelectTime) {
     val id = selectTime.id
     val intent = Intent(context, TextReceiver::class.java)

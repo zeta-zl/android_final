@@ -1,11 +1,10 @@
-package com.zl.testhelper
+package com.zl.testhelper.MainPage
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,9 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import java.time.LocalTime
-
-
+import com.zl.testhelper.*
 
 
 @Composable
@@ -55,16 +52,19 @@ fun MainPage(navHostController : NavHostController) {
 
     val isMainHelpEnabled = remember {
         mutableStateOf(
-            HelpStateManager
-                .isMainHelpEnabled(context)
+            MainPageHelpStateManager
+                .getState(context)
+                ?.toBooleanStrictOrNull() != false
         )
     }
 //    Column {
     Scaffold(
         content = { padding ->
             val mainHelper = MainHelper()
-            if (HelpStateManager
-                    .isMainHelpEnabled(context)
+            if (
+                MainPageHelpStateManager
+                    .getState(context)
+                    ?.toBooleanStrictOrNull() != false
             ) {
                 mainHelper.Helper(isHelpShow = isMainHelpEnabled, extraData = null)
                 Log.i("zeta", "MainHelper")
@@ -92,7 +92,9 @@ fun MainPage(navHostController : NavHostController) {
                     Box(
                         modifier = Modifier
                             .padding(24.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(
+                                RoundedCornerShape(16.dp)
+                            )
                             .background(Color.LightGray)
                     ) {
                         Column(
@@ -129,8 +131,6 @@ fun MainPage(navHostController : NavHostController) {
                         }
                     }
 
-
-
                     Spacer(modifier = Modifier.height(16.dp))
 
 
@@ -138,8 +138,10 @@ fun MainPage(navHostController : NavHostController) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalArrangement =
+                    Arrangement.Center,
+                    horizontalAlignment =
+                    Alignment.CenterHorizontally
                 ) {
                     ButtonList(context, isMainHelpEnabled)
                 }
@@ -170,7 +172,8 @@ fun ButtonList(
         Button(
             onClick = {
                 TestSend(context)
-                HelpStateManager.setMainHelpEnabled(context, false)
+                MainPageHelpStateManager
+                    .saveState(context, false.toString())
             },
             modifier = Modifier
                 .padding(end = 8.dp)
@@ -187,7 +190,8 @@ fun ButtonList(
             Button(
                 onClick = {
                     TestSend(context)
-                    HelpStateManager.setMainHelpEnabled(context, false)
+                    MainPageHelpStateManager
+                        .saveState(context, false.toString())
                 },
                 modifier = Modifier
                     .padding(vertical = 8.dp)
@@ -199,10 +203,11 @@ fun ButtonList(
             }
             Button(
                 onClick = {
-                    HelpStateManager.setMainHelpEnabled(context, false)
+                    MainPageHelpStateManager
+                        .saveState(context, false.toString())
                     showConfirmationDialog(context as Activity) {
-                        hasPermission.value =
-                            requestPermissionsAndSendMessagesAndEmails(context as ComponentActivity)
+//                        hasPermission.value =
+                        requestPermissionsAndSendMessagesAndEmails()
                     }
                 },
                 modifier = Modifier
